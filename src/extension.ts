@@ -87,7 +87,7 @@ function getConfig() {
 async function csprojCommand(
     this: vscode.ExtensionContext,
     // Use file path from context or fall back to active document
-    {fsPath}: vscode.Uri = window.activeTextEditor.document.uri,
+    {fsPath}: vscode.Uri = vscode.window.activeTextEditor?.document.uri ?? vscode.Uri.file(''),
     promptAction = false,
     bulkMode = false
 ): Promise<Csproj | void> {
@@ -122,8 +122,9 @@ async function csprojCommand(
                 YES, NEVER)
             : YES
 
+        if(!pickResult) pickResult = NO
         // Default to "No" action if user blurs the picker
-        const added = await (pickActions[pickResult] || pickActions[NO])({
+        const added = await (pickActions[pickResult])({
             filePath: fsPath,
             fileName,
             bulkMode,
@@ -162,6 +163,7 @@ const pickActions = {
     },
     [NO]({ csproj }: ActionArgs) {
         StatusBar.displayItem(csproj.name, false)
+        return false
     },
     async [NEVER]({ filePath, globalState, fileName }: ActionArgs) {
         await updateIgnoredPaths(globalState, filePath)
@@ -170,6 +172,8 @@ const pickActions = {
         window.showInformationMessage(
             `Added ${fileName} to ignore list, to clear list, ` +
             `run the "csproj: Clear ignored paths"`)
+
+        return false
     }
 }
 
@@ -282,7 +286,7 @@ function multiDeleteMessage(filePaths: string[]) {
 async function csprojRemoveCommand(
     this: vscode.ExtensionContext,
     // Use file path from context or fall back to active document
-    {fsPath}: vscode.Uri = window.activeTextEditor.document.uri,
+    {fsPath}: vscode.Uri = vscode.window.activeTextEditor?.document.uri ?? vscode.Uri.file(''),
     csproj?: Csproj,
     bulkMode = false
 ): Promise<Csproj | void> {
