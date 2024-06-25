@@ -148,7 +148,6 @@ const pickActions = {
     async [YES]({ filePath, fileName, csproj, bulkMode }: ActionArgs) {
         const config = workspace.getConfiguration("csproj")
         const itemType = config.get<ItemType>('itemType', {
-            '*': 'Content',
             '.cs': 'Compile',
             '.ts': 'TypeScriptCompile'
         })

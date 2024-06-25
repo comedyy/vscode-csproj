@@ -45,7 +45,7 @@
             "object"
           ],
           "default": {
-            "*": "Content",
+            ".cs": "Compile",
             ".ts": "TypeScriptCompile"
           },
           "description": "Type of XML element to put in the csproj file."
